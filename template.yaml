@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Task Bounded Context Stack
+Parameters:
+    PostgresUsername:
+        Type: String
+    PostgresPassword:
+        Type: String
+Transform:
+    - AWS::Serverless-2016-10-31
+Resources:
+    EventBus:
+        Type: AWS::Events::EventBus
+        Properties:
+            Name: Task-EventBus
+    DatabaseSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: VPC Postgres
+            GroupDescription: VPC Postgres Traffic
+            SecurityGroupIngress:
+                - IpProtocol: tcp
+                  FromPort: 5432
+                  ToPort: 5432
+                  CidrIp: 0.0.0.0/0
+    Database:
+        Type: AWS::RDS::DBInstance
+        Properties:
+            DBInstanceIdentifier: task
+            DBInstanceClass: db.t4g.micro
+            Engine: postgres
+            EngineVersion: "16.3"
+            AllocatedStorage: 20
+            MasterUsername:
+                Ref: PostgresUsername
+            MasterUserPassword:
+                Ref: PostgresPassword
+            EnablePerformanceInsights: true
+            PubliclyAccessible: true
+            VPCSecurityGroups:
+                - Fn::GetAtt: DatabaseSecurityGroup.GroupId
+Outputs:
+    EventBusArn:
+        Value:
+            Fn::GetAtt: EventBus.Arn
+    EventBusName:
+        Value:
+            Fn::GetAtt: EventBus.Name
+    PostgresEndpoint:
+        Value:
+            Fn::GetAtt: Database.Endpoint.Address

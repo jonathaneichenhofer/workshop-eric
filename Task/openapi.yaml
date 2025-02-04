@@ -1,0 +1,39 @@
+info:
+    title: Task Aggregate
+    version: ""
+servers:
+    - url: https://domainname.com
+openapi: 3.1.0
+paths:
+    /add-task:
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            required:
+                                - title
+                                - description
+                                - assigneeId
+                            type: object
+                            properties:
+                                title:
+                                    type: string
+                                description:
+                                    type: string
+                                assigneeId:
+                                    type: string
+            responses:
+                "200":
+                    description: successful command
+                    content:
+                        application/json:
+                            schema:
+                                required:
+                                    - taskId
+                                type: object
+                                properties:
+                                    taskId:
+                                        type: string
+components:
+    schemas: {}

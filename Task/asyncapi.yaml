@@ -1,0 +1,36 @@
+info:
+    title: Task Aggregate
+    version: ""
+asyncapi: 3.0.0
+channels:
+    TaskAdded:
+        address: Task.Task.TaskAdded
+        messages:
+            TaskAdded:
+                $ref: "#/components/messages/TaskAdded"
+operations:
+    TaskAdded:
+        action: send
+        channel:
+            $ref: "#/channels/TaskAdded"
+        messages:
+            - $ref: "#/channels/TaskAdded/messages/TaskAdded"
+components:
+    messages:
+        TaskAdded:
+            payload:
+                $ref: "#/components/schemas/taskAddedPayload"
+    schemas:
+        taskAddedPayload:
+            required:
+                - title
+                - description
+                - assigneeId
+            type: object
+            properties:
+                title:
+                    type: string
+                description:
+                    type: string
+                assigneeId:
+                    type: string
