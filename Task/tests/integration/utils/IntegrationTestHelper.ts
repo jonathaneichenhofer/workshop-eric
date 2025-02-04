@@ -5,6 +5,9 @@ import { TaskRepository } from "shared/infrastructure/persistence/aggregate/Task
 import { TestAppDataSource } from "./TestAppDataSource";
 import { expect } from "chai";
 import { BaseEntity } from "typeorm";
+import { TaskOverview } from "shared/application/readmodels/TaskOverview";
+import { TaskOverviewEntity } from "shared/infrastructure/persistence/readmodel/TaskOverviewEntity";
+import { handler as taskOverviewHandler } from "useCases/read/TaskOverviewProjection/infrastructure/TaskOverviewProjectionHandler";
 
 export type TExpectedEvent = {
         name: string;
@@ -81,5 +84,33 @@ export class IntegrationTestHelper {
             expect(actualEvent.name).equal(expectedEvents[key].name);
             expect(JSON.parse(actualEvent.payload, parseToDateTime)).to.deep.equal(expectedEvents[key].payload);
         });
+    }
+
+    @OverwriteProtectionBody(false)
+    static async givenTaskOverviews(readModels: TaskOverview[]): Promise<void> {
+        for (const readModel of readModels) {
+            await TestAppDataSource.manager.save(new TaskOverviewEntity(readModel));
+        }
+    }
+
+    @OverwriteProtectionBody(false)
+    static async whenProjectingTaskOverview(...projectedEvents: InboundEvent<any>[]): Promise<void> {
+        for (const projectedEvent of projectedEvents) {
+            const sqsEvent: SQSEvent = {
+                Records: [{
+                    body: JSON.stringify({
+                        ...projectedEvent,
+                        payload: JSON.stringify(projectedEvent.payload)
+                    })
+                } as SQSRecord]
+            }
+            await taskOverviewHandler(sqsEvent);
+        }
+    }
+
+    @OverwriteProtectionBody(false)
+    static async thenExpectTaskOverview(expectedTaskOverview: TaskOverview[]): Promise<void> {
+        const actualTaskOverview = await TestAppDataSource.manager.find(TaskOverviewEntity);
+        expect(actualTaskOverview).to.deep.equal(expectedTaskOverview);
     }
 }

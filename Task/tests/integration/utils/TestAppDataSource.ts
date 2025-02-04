@@ -2,6 +2,9 @@ import { DataSource } from "typeorm";
 import { TaskEventStreamEntity } from "shared/infrastructure/persistence/aggregate/TaskEventStreamEntity";
 import { TaskOutboxEntity } from "shared/infrastructure/publishing/TaskOutboxEntity";
 import { TaskStateEntity } from "shared/infrastructure/persistence/aggregate/TaskStateEntity";
+import { TaskProjectionInboxEntity } from "shared/infrastructure/consuming/TaskProjectionInboxEntity";
+import { TaskProjectionPositionEntity } from "shared/infrastructure/consuming/TaskProjectionPositionEntity";
+import { TaskOverviewEntity } from "shared/infrastructure/persistence/readmodel/TaskOverviewEntity";
 
 export const TestAppDataSource = new DataSource({
     type: 'postgres',
@@ -19,6 +22,9 @@ export const TestAppDataSource = new DataSource({
         TaskEventStreamEntity,
         TaskOutboxEntity,
         TaskStateEntity,
+        TaskProjectionInboxEntity,
+        TaskProjectionPositionEntity,
+        TaskOverviewEntity,
     ],
 });
 

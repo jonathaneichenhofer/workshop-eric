@@ -113,6 +113,77 @@ Resources:
                         Method: POST
                         RestApiId:
                             Ref: ApiGateway
+    TaskTaskOverviewProjection3baf7:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/src/useCases/read/TaskOverviewProjection/
+            Handler: infrastructure/TaskOverviewProjectionHandler.handler
+            Layers:
+                - Ref: LayerShared
+                - Ref: LayerNodeModules
+            Runtime: nodejs20.x
+            MemorySize: 1024
+            Timeout: 299
+            Policies:
+                - CloudWatchLambdaInsightsExecutionRolePolicy
+                - SQSSendMessagePolicy:
+                      QueueName:
+                          Fn::GetAtt: TaskTaskOverviewProjection3baf7Queue.QueueName
+            Events:
+                TaskTaskOverviewProjection3baf7QueueEvent:
+                    Type: SQS
+                    Properties:
+                        Queue:
+                            Fn::GetAtt: TaskTaskOverviewProjection3baf7Queue.Arn
+                        ScalingConfig:
+                            MaximumConcurrency: 2
+    TaskTaskOverviewProjection3baf7Queue:
+        Type: AWS::SQS::Queue
+        Properties:
+            QueueName: TaskTaskOverviewProjection3baf7Queue
+            VisibilityTimeout: 299
+    TaskTaskOverviewProjection3baf7QueuePolicy:
+        Type: AWS::SQS::QueuePolicy
+        Properties:
+            Queues:
+                - Ref: TaskTaskOverviewProjection3baf7Queue
+            PolicyDocument:
+                Id: AllowIncomingAccess
+                Statement:
+                    - Action:
+                          - SQS:SendMessage
+                          - SQS:ReceiveMessage
+                      Effect: Allow
+                      Resource:
+                          - Fn::GetAtt: TaskTaskOverviewProjection3baf7Queue.Arn
+                      Principal: "*"
+    TaskTaskOverviewProjection3baf7QueueEventsRule:
+        Type: AWS::Events::Rule
+        Properties:
+            EventBusName:
+                Ref: EventBusName
+            State: ENABLED
+            EventPattern:
+                source:
+                    - Task.Task
+            Targets:
+                - Arn:
+                      Fn::GetAtt: TaskTaskOverviewProjection3baf7Queue.Arn
+                  Id: TaskTaskOverviewProjection3baf7QueueEventsRule
+                  InputPath: $.detail
+    TaskTaskOverviewProjection3baf7Recreator:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/src/useCases/read/TaskOverviewProjection/
+            Handler: infrastructure/TaskOverviewRecreatorHandler.handler
+            Layers:
+                - Ref: LayerShared
+                - Ref: LayerNodeModules
+            Runtime: nodejs20.x
+            MemorySize: 1024
+            Timeout: 299
+            Policies:
+                - CloudWatchLambdaInsightsExecutionRolePolicy
     Taskeaeb3Publisher:
         Type: AWS::Serverless::Function
         Properties:
