@@ -184,6 +184,27 @@ Resources:
             Timeout: 299
             Policies:
                 - CloudWatchLambdaInsightsExecutionRolePolicy
+    TaskAssigneeTaskefb3f:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/src/useCases/read/AssigneeTask/
+            Handler: infrastructure/AssigneeTaskApiHandler.handler
+            Layers:
+                - Ref: LayerShared
+                - Ref: LayerNodeModules
+            Runtime: nodejs20.x
+            MemorySize: 1024
+            Timeout: 99
+            Policies:
+                - CloudWatchLambdaInsightsExecutionRolePolicy
+            Events:
+                Api:
+                    Type: Api
+                    Properties:
+                        Path: /assignee-task
+                        Method: GET
+                        RestApiId:
+                            Ref: ApiGateway
     Taskeaeb3Publisher:
         Type: AWS::Serverless::Function
         Properties:
