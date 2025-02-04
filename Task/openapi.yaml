@@ -35,5 +35,26 @@ paths:
                                 properties:
                                     taskId:
                                         type: string
+    /complete-task:
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            required:
+                                - taskId
+                            type: object
+                            properties:
+                                taskId:
+                                    type: string
+            responses:
+                "200":
+                    description: successful command
+                    content:
+                        application/json:
+                            schema:
+                                required: []
+                                type: object
+                                properties: {}
 components:
     schemas: {}

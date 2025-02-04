@@ -89,6 +89,30 @@ Resources:
                         Method: POST
                         RestApiId:
                             Ref: ApiGateway
+    TaskCompleteTaskaaec4:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: dist/src/useCases/write/CompleteTask/
+            Handler: infrastructure/CompleteTaskApiHandler.handler
+            Layers:
+                - Ref: LayerShared
+                - Ref: LayerNodeModules
+            Runtime: nodejs20.x
+            MemorySize: 1024
+            Timeout: 99
+            Policies:
+                - CloudWatchLambdaInsightsExecutionRolePolicy
+                - SQSSendMessagePolicy:
+                      QueueName:
+                          Fn::GetAtt: PublisherQueue.QueueName
+            Events:
+                Api:
+                    Type: Api
+                    Properties:
+                        Path: /complete-task
+                        Method: POST
+                        RestApiId:
+                            Ref: ApiGateway
     Taskeaeb3Publisher:
         Type: AWS::Serverless::Function
         Properties:

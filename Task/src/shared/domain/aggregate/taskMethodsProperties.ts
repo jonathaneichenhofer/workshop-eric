@@ -7,3 +7,6 @@ export interface AddTaskProperties {
     description: DescriptionValueObject;
     assigneeId: AssigneeIdValueObject;
 }
+
+export interface CompleteTaskProperties {
+}

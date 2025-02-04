@@ -8,6 +8,11 @@ channels:
         messages:
             TaskAdded:
                 $ref: "#/components/messages/TaskAdded"
+    TaskCompleted:
+        address: Task.Task.TaskCompleted
+        messages:
+            TaskCompleted:
+                $ref: "#/components/messages/TaskCompleted"
 operations:
     TaskAdded:
         action: send
@@ -15,11 +20,20 @@ operations:
             $ref: "#/channels/TaskAdded"
         messages:
             - $ref: "#/channels/TaskAdded/messages/TaskAdded"
+    TaskCompleted:
+        action: send
+        channel:
+            $ref: "#/channels/TaskCompleted"
+        messages:
+            - $ref: "#/channels/TaskCompleted/messages/TaskCompleted"
 components:
     messages:
         TaskAdded:
             payload:
                 $ref: "#/components/schemas/taskAddedPayload"
+        TaskCompleted:
+            payload:
+                $ref: "#/components/schemas/taskCompletedPayload"
     schemas:
         taskAddedPayload:
             required:
@@ -34,3 +48,7 @@ components:
                     type: string
                 assigneeId:
                     type: string
+        taskCompletedPayload:
+            required: []
+            type: object
+            properties: {}
