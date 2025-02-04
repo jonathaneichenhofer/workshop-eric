@@ -48,8 +48,11 @@ export class TaskAggregate extends Aggregate<TaskAggregateState> {
         return newAggregateState;
     }
 
-    @OverwriteProtectionBody(false)
+    @OverwriteProtectionBody(true)
     async completeTask(properties: CompleteTaskProperties): Promise<void> {
+        if (this.state.status !== TaskStatusEnum.Open) {
+            throw new ConflictError('Task is not open.');
+        }
         const taskCompletedEvent = new TaskCompletedEvent(
             {
                 id: UuidGenerator.uuid(),
